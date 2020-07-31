@@ -1,0 +1,1627 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+ \frametitle{Outline}
+  \vspace{-1cm}
+  1. Introduction\\[0.1cm]
+  2. Mathematical Model\\[0.1cm]
+  3. Computational Code\\[0.1cm]
+  4. Validation\\[0.1cm]
+  5. Results\\[0.1cm]
+  6. Conclusion
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Introduction}
+\vspace{-0.9cm}
+\begin{columns}[c]
+\column{.6\textwidth}
+Motivation:
+\begin{itemize}
+  \justifying
+  \item Ischaemic heart disease and stroke have remained the leading death causes globally in the last 15 years [1]
+\end{itemize}
+ 
+\vspace{0.3cm}
+ 
+Goals:
+\begin{itemize}
+ \justifying
+ \item To develop a Finite Element code for the Vorticity-Streamfunction Formulation 
+       with species transport equation using the Arbitrary Lagrangian-Eulerian (ALE) approach and semi-Lagrangian Method \\
+
+
+ \vspace{0.2cm}
+ \item To create new drug-eluting stent design patent 
+
+\end{itemize}
+\column{.4\textwidth}
+\begin{center}
+  \includegraphics[scale=0.38]{images/stent_bare.jpg}
+\end{center}
+\end{columns}
+
+\vspace{0.2cm}
+\tiny [1] World Health Organization, 2018, "The top 10 causes of death".
+\textit{www.who.int/news-room/fact-sheets/detail/the-top-10-causes-of-death}
+[Online accessed 06-04-20 08:27pm]
+
+
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \vspace{-1cm}
+  \textcolor{gray}{1. Introduction}\\[0.1cm]
+  2. Mathematical Model\\[0.1cm]
+  \textcolor{gray}{3. Computational Code}\\[0.1cm]
+  \textcolor{gray}{4. Validation}\\[0.1cm]
+  \textcolor{gray}{5. Results}\\[0.1cm]
+  \textcolor{gray}{6. Conclusion}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{frame}
+\frametitle{\LARGE Arbitrary Lagrangian-Eulerian (ALE)}
+
+\vspace{-0.4cm}
+\begin{columns}[c]
+\column{.5\textwidth}
+\justifying
+The Arbitrary Lagrangian-Eulerian combines
+the classical motion descriptions, while it provides [2]:
+
+\vspace{0.5cm}
+Advantages:
+\begin{itemize}
+  \justifying
+  \item Simulations in fluid-structure and moving boundary problems
+\end{itemize}
+ 
+\vspace{0.5cm}
+Disadvantages:
+\begin{itemize}
+ \justifying
+ \item The computational mesh requires an extensive topological treatment
+\end{itemize}
+
+\column{.5\textwidth}
+\vspace{-1cm}
+\begin{center}
+\begin{tikzpicture}[scale=0.8,square/.style={regular polygon,regular polygon sides=4,inner sep=0}]
+
+ % (a) Lagrangian
+ % -------------------------------------------------------------------
+ % bottom line
+ \draw (0,5) -- (6,5);
+
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (0,5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (1,5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (2.7,5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (4,5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (5.1,5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (6,5) {};
+
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (0,5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (1,5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (2.7,5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (4,5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (5.1,5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (6.0,5) {};
+
+ % top line
+ \draw (0.5,6) -- (5.4,6);
+
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (0.5,6) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (1.4,6) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (2.3,6) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (3.5,6) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (4.6,6) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (5.4,6) {};
+
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (0.5,6) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (1.4,6) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (2.3,6){};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (3.5,6) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (4.6,6) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (5.4,6) {};
+
+ % mesh motion
+ \draw [dashed] (0,  5) -- (0.5,6)  ;
+ \draw [dashed] (1,  5) -- (1.4,6)  ;
+ \draw [dashed] (2.7,5) -- (2.3,6);
+ \draw [dashed] (4,  5) -- (3.5,6)  ;
+ \draw [dashed] (5.1,5) -- (4.6,6);
+ \draw [dashed] (6,  5) -- (5.4,6)  ;
+
+ % particle motion
+ \draw [dotted] (0,  5.15) -- (0.5,5.85);
+ \draw [dotted] (1,  5.15) -- (1.4,5.85);
+ \draw [dotted] (2.7,5.15) -- (2.3,5.85);
+ \draw [dotted] (4,  5.15) -- (3.5,5.85);
+ \draw [dotted] (5.1,5.15) -- (4.6,5.85);
+ \draw [dotted] (6,  5.15) -- (5.4,5.85);
+
+
+
+ % Eulerian legend 
+ \draw [latex-latex] (-0.3,5) -- (-0.3,6);
+ \node at (-0.5,5.5) {t};
+ \node at (3,6.5) {\scriptsize Lagrangian description};
+ % -------------------------------------------------------------------
+ 
+
+
+ % (b) Eulerian
+ % -------------------------------------------------------------------
+ % bottom line
+ \draw (0,2.5) -- (6,2.5);
+
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (0,2.5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (1,2.5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (2.7,2.5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (4,2.5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (5.1,2.5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (6,2.5) {};
+
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (0,  2.5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (1,  2.5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (2.7,2.5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (4,  2.5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (5.1,2.5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (6.0,2.5) {};
+
+ % top line
+ \draw (0,3.5) -- (6,3.5);
+
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (0.5,3.5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (1.4,3.5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (2.3,3.5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (3.5,3.5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (4.6,3.5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (5.4,3.5) {};
+
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (0,  3.5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (1,  3.5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (2.7,3.5){};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (4,  3.5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (5.1,3.5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (6.0,3.5) {};
+
+ % mesh motion
+ \draw [dashed] (0,  2.5) -- (0,  3.5)  ;
+ \draw [dashed] (1,  2.5) -- (1,  3.5)  ;
+ \draw [dashed] (2.7,2.5) -- (2.7,3.5)  ;
+ \draw [dashed] (4,  2.5) -- (4,  3.5)  ;
+ \draw [dashed] (5.1,2.5) -- (5.1,3.5)  ;
+ \draw [dashed] (6,  2.5) -- (6,  3.5)  ;
+
+ % particle motion
+ \draw [dotted] (0,  2.65) -- (0.5,3.35);
+ \draw [dotted] (1,  2.65) -- (1.4,3.35);
+ \draw [dotted] (2.7,2.65) -- (2.3,3.35);
+ \draw [dotted] (4,  2.65) -- (3.5,3.35);
+ \draw [dotted] (5.1,2.65) -- (4.6,3.35);
+ \draw [dotted] (6,  2.65) -- (5.4,3.35);
+
+
+
+ % Eulerian legend 
+ \draw [latex-latex] (-0.3,2.5) -- (-0.3,3.5);
+ \node at (-0.5,3) {t};
+ \node at (3,4.0) {\scriptsize Eulerian description};
+ % -------------------------------------------------------------------
+ 
+
+
+ % (c) ALE
+ % -------------------------------------------------------------------
+ % bottom line
+ \draw (0,0) -- (6,0);
+
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (0,0) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (1,0) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (2.7,0) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (4,0) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (5.1,0) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (6,0) {};
+
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (0,0) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (1,0) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (2.7,0) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (4,0) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (5.1,0) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (6.0,0) {};
+
+ % top line
+ \draw (0.2,1) -- (5.8,1);
+
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (0.5,1) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (1.4,1) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (2.3,1) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (3.5,1) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (4.6,1) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (5.4,1) {};
+
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (0.2,1) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (1.1,1) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (2.8,1) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (3.8,1) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (4.9,1) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (5.8,1) {};
+
+ % mesh motion
+ \draw [dashed] (0,0.0) -- (0.2,1);
+ \draw [dashed] (1,0.0) -- (1.1,1);
+ \draw [dashed] (2.7,0.0) -- (2.8,1);
+ \draw [dashed] (4,0.0) -- (3.8,1);
+ \draw [dashed] (5.1,0.0) -- (4.9,1);
+ \draw [dashed] (6,0.0) -- (5.8,1);
+
+ % particle motion
+ \draw [dotted] (0,0.15) -- (0.5,0.85);
+ \draw [dotted] (1,0.15) -- (1.4,0.85);
+ \draw [dotted] (2.7,0.15) -- (2.3,0.85);
+ \draw [dotted] (4,0.15) -- (3.5,0.85);
+ \draw [dotted] (5.1,0.15) -- (4.6,0.85);
+ \draw [dotted] (6,0.15) -- (5.4,0.85);
+
+
+
+ % ALE legend 
+ \draw [latex-latex] (-0.3,0) -- (-0.3,1);
+ \node at (-0.5,0.5) {t};
+ \node at (3,1.5) {\scriptsize ALE description};
+ 
+
+ % picture legend
+ \node[square, draw, inner sep=0pt, minimum size=8pt] at (0.5,-0.7) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (0.5,-1.2) {};
+ \draw [dotted] (3.5,-0.7) -- (4.08,-0.7);
+ \draw [dashed] (3.5,-1.2) -- (4.1,-1.2);
+
+ \node at (1.7,-0.7) {\tiny material point};
+ \node at (1.2,-1.2) {\tiny node};
+ \node at (5.2,-0.7) {\tiny particle motion};
+ \node at (5.1,-1.2) {\tiny mesh motion};
+ % -------------------------------------------------------------------
+
+
+\end{tikzpicture}
+\end{center}
+\end{columns}
+
+\vspace{0.5cm}
+\tiny [2]
+Donea, J., Huerta, A., Ponthot, J.‐P. and Rodríguez‐Ferran, A. (2004). Arbitrary Lagrangian–Eulerian Methods. In Encyclopedia of Computational Mechanics \textit{doi:10.1002/0470091355.ecm009}
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame} 
+ \frametitle{\LARGE Governing Equations}
+\vspace{-1.2cm}
+\begin{columns}[c]
+\column{.5\textwidth}
+Assumptions [3]:\\[0.1cm]
+\hspace{0.5cm}  1. Continuum hypothesis\\[0.1cm]
+\hspace{0.5cm}  2. Homogeneous and Isotropic\\[0.1cm]
+\hspace{0.5cm}  3. Incompressible\\[0.1cm]
+\hspace{0.5cm}  4. Newtonian\\[0.1cm]
+\hspace{0.5cm}  5. Constant Mass Difusivity\\[0.1cm]
+\hspace{0.5cm}  6. Single-phase Flow\\[0.1cm]
+\hspace{0.5cm}  7. Two-dimensional flow
+
+\vspace{-1cm}
+\column{.5\textwidth}
+\begin{center}
+\begin{equation*}
+ \frac{\partial \omega}{\partial t} + \left( \mathbf{v} - \mathbf{\hat{v}} \right) \cdot \nabla \omega = \frac{1}{Re} \nabla^{2} \omega
+\end{equation*}
+\medskip
+\begin{equation*}
+ \nabla^{2} \psi = - \omega
+\end{equation*}
+\medskip
+\begin{equation*}
+ \frac{\partial c}{\partial t} + \left( \mathbf{v} - \mathbf{\hat{v}} \right) \cdot \nabla c = \frac{1}{ReSc} \nabla^{2} c 
+\end{equation*}
+\end{center}
+\end{columns}
+
+\vspace{1cm}
+\begin{itemize}
+\justifying
+\item If the mesh velocity field $\mathbf{\hat{v}} = \mathbf{v} \left( Lagrangian \right)$ or $\mathbf{\hat{v}}$ = 0 \left( Eulerian \right)$\\
+
+\bigskip
+\item The material velocity field $\mathbf{v} = \left( v_{x}, v_{y} \right)$ is calculated by:\\ 
+$v_{x} = \partial \psi / \partial y$ and 
+$v_{y} = - \partial \psi / \partial x$
+\end{itemize}
+
+\vspace{0.2cm}
+\tiny [3]
+Panton, R. (2013). Incompressible Flow John Wiley \& Sons, Ltd
+
+%Batchelor, G. (1967). An Introduction to Fluid Dynamics (Cambridge Mathematical Library). Cambridge: Cambridge University Press. \textit{doi:10.1017/CBO9780511800955}
+
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} 
+ \frametitle{\LARGE Semi-Lagrangian Method}
+\vspace{-1cm}
+\begin{columns}[c]
+\column{.5\textwidth}
+\justifying
+The convective term was replaced by material derivative in the direction of characteristic trajectory, that is:
+ $\frac{D(\cdot)}{Dt} = \frac{\partial (\cdot)}{\partial t} + (\mathbf{v} - \mathbf{\hat{v}}) \cdot \nabla (\cdot)$
+
+\column{.5\textwidth}
+\begin{equation*}
+ \frac{D \omega}{D t} = \frac{1}{Re} \nabla^{2} \omega
+\end{equation*}
+\\
+\begin{equation*}
+ \nabla^{2} \psi = - \omega
+\end{equation*}
+\\
+\begin{equation*}
+ \frac{D c}{D t} = \frac{1}{ReSc} \nabla^{2} c 
+\end{equation*}
+\end{columns}
+
+\vspace{1cm}
+\begin{columns}[c]
+\column{.5\textwidth}
+\justifying
+The departure node is calculated by $x_{d}^{n} = x_{i}^{n+1} - \left( \mathbf{v} - \mathbf{\hat{v}}\right) \Delta t$. Then, a searching procedure is required to find $x_{d}^{n}$ using barycentric coordinates
+
+
+
+\column{.5\textwidth}
+\vspace{-0.5cm}
+\begin{center}
+\begin{tikzpicture}[scale=2.5]
+ % grid
+ \draw (2.5,2.5) -- (3.75,2.5);
+ \draw (2.5,2.8) -- (3.75,2.8);
+ \draw (2.5,3.0) -- (3.75,3.0);
+
+ \draw (2.60,2.5) -- (2.64,2.8) -- (2.60,3.0);
+ \draw (3.2,2.5) -- (3.12,2.8) -- (3.1,3.0);
+ \draw (3.54,2.5) -- (3.64,2.8) -- (3.5,3.0);
+
+ % material points
+ \draw[dashed] (2.8,2.5) -- (3.12,2.8);
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (2.8,2.5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (3.12,2.8) {};
+ 
+
+ % nodes
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (2.60,2.5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (3.2,2.5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (3.54,2.5) {};
+
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (2.64,2.8) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (3.12,2.8) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (3.64,2.8) {};
+
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (2.60,3.0) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (3.1,3.0) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (3.50,3.0) {};
+
+
+ % legend
+ \node[draw=none, scale=0.8] at (2.80,2.62) {\small $\mathbf{x}_{d}$};
+ \node[draw=none, scale=0.8] at (3.22,2.68) {\small $\mathbf{x}_{i}$};
+
+ \node[draw=none, scale=0.8] at (3.90,2.50) {\small $t^{n}$};
+ \node[draw=none, scale=0.8] at (3.95,2.80) {\small $t^{n+1}$};
+ \node[draw=none, scale=0.8] at (3.95,3.00) {\small $t^{n+2}$};
+
+ \node[draw=none, scale=0.8] at (2.60,2.35) {\small $\mathbf{x}_{i-1}$};
+ \node[draw=none, scale=0.8] at (3.12,2.35) {\small $\mathbf{x}_{i}$};
+ \node[draw=none, scale=0.8] at (3.64,2.35) {\small $\mathbf{x}_{i+1}$};
+
+
+\end{tikzpicture}
+\end{center}
+\end{columns}
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame} 
+ \frametitle{\LARGE Semi-Lagrangian Method}
+
+\begin{columns}[c]
+\column{.5\textwidth}
+\justifying
+The implicit semi-Lagrangian time discretization provides [4]:
+
+\medskip
+Advantages:
+\begin{itemize}
+ \justifying
+ \item Symmetric linear systems\\
+ \item Unconditionnal stability
+\end{itemize}
+
+\vspace{0.5cm}
+Disadvantages:
+\begin{itemize}
+ \justifying
+ \item Numerical Diffusion\\
+ \item Searching procedure may lead to excessive computational cost
+       if it is not well designed
+\end{itemize}
+
+
+\column{.5\textwidth}
+\begin{equation*}
+ \frac{\omega_{i}^{n+1} - \omega_{d}^{n}}{\Delta t} = \frac{1}{Re} \nabla^{2} \omega^{n+1}
+\end{equation*}
+\begin{equation*}
+ \nabla^{2} \psi = - \omega
+\end{equation*}
+\begin{equation*}
+ \frac{c_{i}^{n+1} - c_{d}^{n}}{\Delta t} = \frac{1}{ReSc} \nabla^{2} c^{n+1}
+\end{equation*}
+\end{columns}
+
+
+\vspace{0.6cm}
+\justifying
+\tiny [4]
+Pironneau, O. On the transport-diffusion algorithm and its applications to the Navier-Stokes equations. Numer. Math. 38, 309–332 (1982). \textit{https://doi.org/10.1007/BF01396435}
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\begin{frame} 
+ \frametitle{\LARGE Searching Procedure}
+
+\begin{columns}[c]
+\column{.5\textwidth}
+
+\begin{center}
+\begin{tikzpicture}[scale=2.5]
+
+ % -------------------------------------------------------------------
+ % FIGURE B
+ % boundary 
+ \draw (2.5,1.6) -- (4.0,1.6);
+ \draw (2.5,1.6) -- (2.5,1.05);
+ \draw (3.0,1.05) -- (3.0,0.5);
+ \draw (2.5,1.05) -- (3.0,1.05);
+ \draw (3.0,0.5) -- (4.0,0.5);
+
+ % nodes
+ \coordinate (A) at (2.500,1.0500) {};
+ \coordinate (C) at (2.500,1.3330) {};
+ \coordinate (D) at (2.500,1.6000) {};
+ \coordinate (F) at (3.000,1.0500) {};
+ \coordinate (G) at (2.850,1.3560) {};
+ \coordinate (H) at (3.100,1.6000) {};
+ \coordinate (I) at (3.000,0.5000) {};
+ \coordinate (J) at (3.250,0.8300) {};
+ \coordinate (K) at (3.250,1.2530) {};
+ \coordinate (L) at (3.400,1.6000) {};
+ \coordinate (M) at (3.650,0.5000) {};
+ \coordinate (N) at (3.450,0.6200) {};
+ \coordinate (O) at (3.620,1.0000) {};
+ \coordinate (P) at (3.600,1.3300) {};
+ \coordinate (Q) at (2.800,1.6000) {};
+ \coordinate (R) at (2.750,1.0500) {};
+ \coordinate (S) at (3.000,0.8000) {};
+
+ % elements
+ \draw (J) -- (K) -- (F) -- cycle;
+ \draw (F) -- (K) -- (G) -- cycle;
+ \draw (C) -- (G) -- (D) -- cycle;
+ \draw (G) -- (H) -- (D) -- cycle;
+ \draw (I) -- (N) -- (J) -- cycle;
+ \draw (I) -- (M) -- (N) -- cycle;
+ \draw (N) -- (O) -- (J) -- cycle;
+ \draw (J) -- (O) -- (K) -- cycle;
+ \draw (P) -- (L) -- (K) -- cycle;
+ \draw (K) -- (L) -- (H) -- cycle;
+ \draw (O) -- (P) -- (K) -- cycle;
+ \draw (G) -- (K) -- (H) -- cycle;
+ \draw (Q) -- (G) -- (H) -- cycle;
+ \draw (R) -- (G) -- (R) -- cycle;
+ \draw (S) -- (J) -- (F) -- cycle;
+ \draw[red,line width=2pt] (A) -- (C) -- (G) -- cycle;
+ 
+
+% arrow
+ \draw[dashed,line width=0.03cm,-stealth]  (2.57,1.20)  -- (J) ;
+
+ % departure nodes
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=7.8pt] at (2.57,1.20) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=7.8pt] at (J) {};
+
+ % searching procedure path
+ \draw[red, line width=2pt]  (J)--(F) ;
+ \draw[red, line width=2pt]  (F)--(R) ;
+ \draw[red, line width=2pt]  (R)--(A) ;
+
+ % draw nodes
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (A) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (C) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (D) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (F) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (G) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (H) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (I) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (J) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (K) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (L) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (M) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (N) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (O) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (P) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (Q) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (R) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (S) {};
+
+
+ 
+
+ 
+ % legend
+ \node[draw=none, scale=1.0] at (3.9,1.0) {\small $domain$};
+ \node[draw=none, scale=1.0] at (3.8,1.65) {\small $boundary$};
+
+ \node[draw=none, scale=1.0] at (3.32,0.94) {\small $x_{i}$};
+ \node[draw=none, scale=1.0] at (2.65,1.27) {\small $x_{d}$};
+
+
+\end{tikzpicture}
+\end{center}
+
+
+
+
+
+\column{.5\textwidth}
+\vspace{-0.5cm}
+\begin{center}
+\begin{tikzpicture}[scale=2.5]
+
+ % boundary 
+ \draw[line width=0.2mm] (2.5,1.6) -- (4.0,1.6);
+ \draw[line width=0.2mm] (2.5,1.6) -- (2.5,0.5);
+ \draw[line width=0.2mm] (2.5,0.5) -- (4.0,0.5);
+
+ % nodes
+ \coordinate (A) at (2.500,0.5000) {};
+ \coordinate (B) at (2.500,0.8667) {};
+ \coordinate (C) at (2.500,1.2330) {};
+ \coordinate (D) at (2.500,1.6000) {};
+ \coordinate (E) at (2.733,0.6830) {};
+ \coordinate (F) at (2.833,1.0500) {};
+ \coordinate (G) at (2.733,1.4160) {};
+ \coordinate (H) at (3.000,1.6000) {};
+ \coordinate (I) at (3.066,0.5000) {};
+ \coordinate (J) at (3.166,0.8660) {};
+ \coordinate (K) at (3.150,1.3330) {};
+ \coordinate (L) at (3.333,1.6000) {};
+ \coordinate (M) at (3.500,0.5000) {};
+ \coordinate (N) at (3.333,0.6830) {};
+ \coordinate (O) at (3.400,1.0000) {};
+ \coordinate (P) at (3.500,1.2300) {};
+
+ % elements
+ \draw (A) -- (E) -- (B) -- cycle;
+ \draw (A) -- (I) -- (E) -- cycle;
+ \draw (E) -- (J) -- (F) -- cycle;
+ \draw (E) -- (F) -- (B) -- cycle;
+ \draw (B) -- (F) -- (C) -- cycle;
+ \draw (J) -- (K) -- (F) -- cycle;
+ \draw (F) -- (K) -- (G) -- cycle;
+ \draw (C) -- (F) -- (G) -- cycle;
+ \draw (C) -- (G) -- (D) -- cycle;
+ \draw (G) -- (H) -- (D) -- cycle;
+ \draw (I) -- (N) -- (J) -- cycle;
+ \draw (I) -- (M) -- (N) -- cycle;
+ \draw (N) -- (O) -- (J) -- cycle;
+ \draw (J) -- (O) -- (K) -- cycle;
+ \draw (P) -- (L) -- (K) -- cycle;
+ \draw (K) -- (L) -- (H) -- cycle;
+ \draw (O) -- (P) -- (K) -- cycle;
+ \draw[red,line width=0.04cm] (I) -- (J) -- (E) -- cycle;
+ \draw[red,line width=0.04cm] (B) -- (C);
+ \draw[red,line width=0.04cm] (G) -- (K) -- (H) -- cycle;
+ 
+
+ % draw nodes
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (A) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (B) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (C) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (D) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (E) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (F) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (G) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (H) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (I) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (J) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (K) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (L) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (M) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (N) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (O) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (P) {};
+
+
+ % arrow
+ \draw[dashed,line width=0.02cm] (J) edge (2.95,0.65);
+ \draw[dashed,line width=0.02cm] (J) edge (2.90,1.45);
+ \draw[dashed,line width=0.02cm] (J) edge (2.4,1.05) ;
+
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (J) {};
+
+ % departure nodes
+ \node[circle, fill=white, draw, inner sep=0pt, minimum size=4pt] at (2.95,0.65) {};
+ \node[circle, fill=white, draw, inner sep=0pt, minimum size=4pt] at (2.90,1.45) {};
+ \node[circle, fill=white, draw, inner sep=0pt, minimum size=4pt] at (2.4,1.05) {};
+
+
+ 
+ % legend
+ \node[draw=none, scale=0.8] at (3.23,0.97) {\small $\omega_{i}$};
+ 
+ \node[draw=none, scale=0.8] at (3.05,0.64) {$1$};
+ \node[draw=none, scale=0.8] at (3.00,1.45) {$2$};
+ \node[draw=none, scale=0.8] at (2.4,1.15) {$3$};
+ 
+ \node[draw=none, scale=0.9] at (3.7,1.0) {\small $domain$};
+ \node[draw=none, scale=0.9] at (3.8,1.65) {\small $boundary$};
+\end{tikzpicture}
+\end{center}
+\end{columns}
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\begin{frame} 
+ \frametitle{\LARGE Galerkin FE Method}
+\vspace{-1cm}
+\begin{columns}[c]
+\column{.5\textwidth}
+\begin{figure}[H]
+\begin{center}
+\begin{tikzpicture}[scale=1.8]
+
+ \node at (0.5,1.5) {\scriptsize Quad Element};
+ \draw (0,2) -- (1,2) -- (0.5,3) -- cycle;
+ \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=below left:{1}] at (0,2) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=below right:{2}] at (1,2) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=above:{3}] at (0.5,3) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=below:{4}] at (0.5,2) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=right:{5}] at (0.75,2.5) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=left:{6}] at (0.25,2.5) {};
+
+ \node at (0.5,-0.4) {\scriptsize Linear Element};
+ \draw (0,0) -- (1,0) -- (0.5,1) -- cycle;
+ \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=below left:{1}] at (0,0) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=below right:{2}] at (1,0) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=above:{3}] at (0.5,1) {};
+ 
+
+
+% \draw (-1,0) -- (0,0) -- (-0.5,1) -- cycle;
+% \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=below left:{1}] at (-1,0) {};
+% \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=below right:{2}] at (0,0) {};
+% \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=above:{3}] at (-0.5,1) {};
+%
+% \draw (1,0) -- (2,0) -- (1.5,1) -- cycle;
+% \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=below left:{1}] at (1,0) {};
+% \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=below right:{2}] at (2,0) {};
+% \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=above:{3}] at (1.5,1) {};
+% \node[circle, fill=black, inner sep=0pt, minimum size=5pt,label=above:{4}] at (1.5,0.33) {};
+
+
+
+ 
+ %\node[draw=none, scale=1.2] at (0.5,-0.5) {$N_i = L_i$};
+ %\node[draw=none, scale=1.2] at (0.5,-0.9) {$i = 1,2,3$};
+\end{tikzpicture}
+\end{center}
+\end{figure}
+
+\vspace{-1cm}
+\column{.5\textwidth}
+\begin{center}
+\begin{equation*}
+ \left[ \frac{\mathbf{M}}{\Delta t} + \frac{\mathbf{K}}{Re} \right] \omega_{i}^{n+1} = \frac{\mathbf{M}}{\Delta t} \omega_{d}^{n}
+\end{equation*}
+\medskip
+\begin{equation*}
+ \mathbf{K} \psi = \mathbf{M} \omega
+\end{equation*}
+\medskip
+\begin{equation*}
+ \left[ \frac{\mathbf{M}}{\Delta t} + \frac{\mathbf{K}}{ReSc} \right] c_{i}^{n+1} = \frac{\mathbf{M}}{\Delta t} c_{d}^{n}
+\end{equation*}
+\end{center}
+
+\vspace{0.5cm}
+\begin{itemize}
+\justifying
+\item The material velocity field is calculated by: \\
+$\mathbf{M} v_{x} = \mathbf{G_{y}} \psi$\\
+$\mathbf{M} v_{y} = - \mathbf{G_{x}} \psi$
+\end{itemize}
+\end{columns}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \vspace{-1cm}
+  \textcolor{gray}{1. Introduction}\\[0.1cm]
+  \textcolor{gray}{2. Mathematical Model}\\[0.1cm]
+  3. Computational Code\\[0.1cm]
+  \textcolor{gray}{4. Validation}\\[0.1cm]
+  \textcolor{gray}{5. Results}\\[0.1cm]
+  \textcolor{gray}{6. Conclusion}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\begin{frame}
+ \frametitle{\LARGE Laplacian Smoothing}
+
+\vspace{-0.8cm}
+\begin{columns}[c]
+\column{.5\textwidth}
+\justifying
+To avoid the fast degradation of the computational elements
+due to ALE description, it was used the Laplacian Smoothing Method [5]
+
+\smallskip
+The new node position $\mathbf{\hat{x}_{i}}$ can be approximated by:
+
+\begin{equation*}
+\mathbf{\hat{x}_{i}} = \sum_{i}^{np} \sum_{j}^{N_{1}} w_{ij} (\mathbf{x}_{j} - \mathbf{x}_{i})
+\end{equation*}
+
+\smallskip
+where,
+$np$ is node number,
+$N_{1}$ is the 1-ring neighbors of a node,
+$w_{ij}$ is the weight and was calculated by the inverse distance from neighbors vertices
+
+
+\vspace{-1cm}
+\column{.5\textwidth}
+\begin{center}
+  \includegraphics[scale=0.2]{images/Smoothing.png}
+  \caption{\scriptsize with Laplacian Smoothing}
+
+  \vspace{1.0cm}
+  \includegraphics[scale=0.2]{images/noSmoothing.png}
+  \caption{\scriptsize no Laplacian Smoothing}
+\end{center}
+\end{columns}
+
+\vspace{1.1cm}
+\tiny [5] Desbrun,  M.  Meyer,  P.  Schröder,  A.  Barr,  Implicit  fairing  of  irregular  meshes  using  diffusion  and  curvature  flow,  in:  Proceedingsof  Siggraph,  1999,  pp.  317–324
+
+\end{frame}
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+ \frametitle{\LARGE Computational Cost}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ccc}
+\toprule
+\textbf{Process} & \textbf{AVG Computational Cost} (\%) \\
+\midrule
+Mesh import & 1.24 \\
+Assembly & 73.87 \\
+BC Apply & 6.70 \\
+Mesh update & 10.05 \\
+Semi-Lagrangian & 2.27 \\
+Vorticity Solver & 5.51 \\
+VTK export & 0.36 \\
+\bottomrule
+\end{tabular}
+\caption{Average computational cost for several linear triangular elements.}
+\label{time ratio}
+\end{table}
+
+
+
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{frame} 
+ \frametitle{\LARGE Solution Algorithm}
+\vspace{-0.9cm}
+% Define block styles
+\tikzstyle{block} = [rectangle, draw, fill=gray!10!,
+    text width=28em, text centered, draw,scale=0.6,text=black!90!]
+\tikzstyle{line} = [draw, -latex',scale=0.6]
+
+
+\begin{center}
+\begin{tikzpicture}[node distance = 1.1cm,auto]
+    % Place nodes
+    \node [block] (step1) {Import mesh};
+    \node [block, below of=step1] (step2) {Calculate Gaussian Quadradure and Assemble Matrix};
+    \node [block, below of=step2] (step3) {Apply Boundary Conditions};
+    \node [block, below of=step3] (step4) {Calculate Laplacian smoothing and ALE velocity};
+    \node [block, below of=step4] (step5) {Move Nodes};
+    \node [block, below of=step5] (step6) {Calculate semi-Lagrangian Method};
+    \node [block, below of=step6] (step7) {Calculate Gaussian Quadrature and Assemble Matrix};
+    \node [block, below of=step7] (step8) {Apply Boundary Conditions};
+    \node [block, below of=step8] (step9) {Calculate vorticity field};
+    \node [block, below of=step9] (step10) {Calculate streamfunction field};
+    \node [block, below of=step10] (step11) {Calculate velocity field};
+    \node [block, below of=step11] (step12) {Calculate concentration field};
+    \node [right of=step4, node distance=4.5cm] (initialLoop) {};
+    \node [right of=step12, node distance=4.5cm] (finalLoop) {};
+    \node [right of=step8, node distance=6.3cm] (textLoop) {};
+
+    \node [draw=none, align=center,scale=0.8,text=black!100!] at (textLoop) {Repeat the procedure \\ for the next time step \\ until the steady state};
+    % Draw edges
+    \path [line] (step1) -- (step2);
+    \path [line] (step2) -- (step3);
+    \path [line] (step3) -- (step4);
+    \path [line] (step4) -- (step5);
+    \path [line] (step5) -- (step6);
+    \path [line] (step6) -- (step7);
+    \path [line] (step7) -- (step8);
+    \path [line] (step8) -- (step9);
+    \path [line] (step9) -- (step10);
+    \path [line] (step10) -- (step11);
+    \path [line] (step11) -- (step12);
+    \path [line,dashed] (step12) -- (finalLoop) -- (initialLoop) -- (step4);
+\end{tikzpicture}
+\end{center}
+
+
+
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \vspace{-1cm}
+  \textcolor{gray}{1. Introduction}\\[0.1cm]
+  \textcolor{gray}{2. Mathematical Model}\\[0.1cm]
+  \textcolor{gray}{3. Computational Code}\\[0.1cm]
+  4. Validation\\[0.1cm]
+  \textcolor{gray}{5. Results}\\[0.1cm]
+  \textcolor{gray}{6. Conclusion}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\iffalse
+\begin{frame}
+ \frametitle{\small Validation - Poiseuille Flow}
+\vspace{-0.7cm}
+\begin{center}
+\begin{columns}[c]
+\begin{column}{0.55\textwidth} 
+\small
+Boundaries Conditions:\\[0.2cm]
+Inflow condition: $u=1$, $v=0$ e $\psi=y$\\[0.1cm]
+Outflow condition: $\psi=y$\\[0.1cm]
+Top plate: $u=0$, $v=0$, $\psi=1$\\[0.1cm]
+Bottom plate: $u=0$, $v=0$, $\psi=0$
+\end{column}
+\begin{column}{0.35\textwidth} 
+\begin{tikzpicture}[scale=0.8]
+ \draw [pattern=north east lines] (0,0) -- (0,-0.1) -- (5,-0.1) -- (5,0) -- cycle;
+ \draw [pattern=north east lines] (0,1) -- (0,1.1) -- (5,1.1) -- (5,1) -- cycle;
+ \draw [dotted] (0,0.9) -- (5,0.9);
+ \draw [dotted] (0,0.7) -- (5,0.7);
+ \draw [dotted] (0,0.5) -- (5,0.5);
+ \draw [dotted] (0,0.3) -- (5,0.3);
+ \draw [dotted] (0,0.1) -- (5,0.1);
+
+% \draw [->,thick] (-2,-0.1)--(-2,1.5) node[left] {$y$};
+% \draw [->,thick] (-2.1,0)--(-0.5,0) node[below] {$x$};
+
+ \draw  (4.0,0.0) to [bend right=100] (4.0,1.0);
+ \draw  (2.5,0.0) to [bend right=100] (2.5,1.0);
+ \draw  (1.0,0.0) to [bend right=100] (1.0,1.0);
+
+ \draw [->,thick] (4.0,0.9) to (4.2,0.9);
+ \draw [->,thick] (4.0,0.7) to (4.28,0.7);
+ \draw [->,thick] (4.0,0.5) to (4.3,0.5);
+ \draw [->,thick] (4.0,0.3) to (4.28,0.3);
+ \draw [->,thick] (4.0,0.1) to (4.2,0.1);
+
+ \draw [->,thick] (2.5,0.9) to (2.7,0.9);
+ \draw [->,thick] (2.5,0.7) to (2.78,0.7);
+ \draw [->,thick] (2.5,0.5) to (2.8,0.5);
+ \draw [->,thick] (2.5,0.3) to (2.78,0.3);
+ \draw [->,thick] (2.5,0.1) to (2.7,0.1);
+
+ \draw [->,thick] (1.0,0.9) to (1.2,0.9);
+ \draw [->,thick] (1.0,0.7) to (1.28,0.7);
+ \draw [->,thick] (1.0,0.5) to (1.3,0.5);
+ \draw [->,thick] (1.0,0.3) to (1.28,0.3);
+ \draw [->,thick] (1.0,0.1) to (1.2,0.1);
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\end{center}
+\vspace{-0.5cm}
+\begin{center}
+\begin{columns}[c]
+\begin{column}{0.4\textwidth} 
+\begin{equation*}
+u = \frac{4 u_{max}}{L^2} y \big[ L - y \big]
+\end{equation*}
+\end{column}
+\begin{column}{0.73\textwidth} 
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.48]{images/poiseuille_velocity.pdf}
+\end{figure}
+%\vspace{-0.2cm}
+%\centering \scriptsize Evolution of velocity field profile in time for \textit{$Re = 100$} and the comparison between numerical solution and analytical solution
+\end{column}
+\end{columns}
+\end{center}
+\end{frame}
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+ \frametitle{\LARGE Validation - Poiseuille Flow}
+\vspace{-0.55cm}
+\begin{center}
+\begin{columns}[c]
+\begin{column}{0.55\textwidth} 
+\small
+Boundaries Conditions:\\[0.2cm]
+Inflow condition: $u=u_{analytical}$, $v=0$
+Top plate: $u=0$, $v=0$, $\psi=1$\\[0.1cm]
+Bottom plate: $u=0$, $v=0$, $\psi=0$
+\end{column}
+\begin{column}{0.35\textwidth} 
+\begin{tikzpicture}[scale=0.8]
+ \draw [pattern=north east lines] (0,0) -- (0,-0.1) -- (5,-0.1) -- (5,0) -- cycle;
+ \draw [pattern=north east lines] (0,1) -- (0,1.1) -- (5,1.1) -- (5,1) -- cycle;
+ \draw [dotted] (0,0.9) -- (5,0.9);
+ \draw [dotted] (0,0.7) -- (5,0.7);
+ \draw [dotted] (0,0.5) -- (5,0.5);
+ \draw [dotted] (0,0.3) -- (5,0.3);
+ \draw [dotted] (0,0.1) -- (5,0.1);
+
+% \draw [->,thick] (-2,-0.1)--(-2,1.5) node[left] {$y$};
+% \draw [->,thick] (-2.1,0)--(-0.5,0) node[below] {$x$};
+
+ \draw  (4.0,0.0) to [bend right=100] (4.0,1.0);
+ \draw  (2.5,0.0) to [bend right=100] (2.5,1.0);
+ \draw  (1.0,0.0) to [bend right=100] (1.0,1.0);
+
+ \draw [->,thick] (4.0,0.9) to (4.2,0.9);
+ \draw [->,thick] (4.0,0.7) to (4.28,0.7);
+ \draw [->,thick] (4.0,0.5) to (4.3,0.5);
+ \draw [->,thick] (4.0,0.3) to (4.28,0.3);
+ \draw [->,thick] (4.0,0.1) to (4.2,0.1);
+
+ \draw [->,thick] (2.5,0.9) to (2.7,0.9);
+ \draw [->,thick] (2.5,0.7) to (2.78,0.7);
+ \draw [->,thick] (2.5,0.5) to (2.8,0.5);
+ \draw [->,thick] (2.5,0.3) to (2.78,0.3);
+ \draw [->,thick] (2.5,0.1) to (2.7,0.1);
+
+ \draw [->,thick] (1.0,0.9) to (1.2,0.9);
+ \draw [->,thick] (1.0,0.7) to (1.28,0.7);
+ \draw [->,thick] (1.0,0.5) to (1.3,0.5);
+ \draw [->,thick] (1.0,0.3) to (1.28,0.3);
+ \draw [->,thick] (1.0,0.1) to (1.2,0.1);
+\end{tikzpicture}\\[0.2cm]
+\small Nodes: 1757\\
+\small Elements: 3263\\
+\small Relative Error: 1.2\%
+\end{column}
+\end{columns}
+\end{center}
+
+\vspace{0.2cm}
+\begin{center}
+\begin{columns}[c]
+\begin{column}{0.55\textwidth} 
+\input{horizontalVelocity}
+\end{column}
+
+\begin{column}{0.55\textwidth} 
+\hspace{0.5cm}
+\input{relativeError}
+\end{column}
+
+\end{columns}
+\end{center}
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\iffalse
+\begin{frame}
+ \frametitle{\small Validation - Poiseuille Flow}
+\begin{figure}
+  \centering
+  \vspace{-1.5cm}
+  \includegraphics[scale=0.6]{images/poiseuille_velocity.pdf}
+\end{figure}
+\vspace{-0.2cm}
+\centering \scriptsize Evolution of velocity field profile in time for \textit{$Re = 100$} and the comparison between numerical solution and analytical solution.
+\end{frame}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+ \frametitle{\LARGE Validation - Lid Driven Cavity Flow}
+\vspace{-0.3cm}
+\begin{center}
+\begin{columns}[c]
+\begin{column}{0.65\textwidth} 
+\small
+Boundaries Conditions:\\[0.2cm]
+Bottom and side plates: $u=0$, $v=0$ e $\psi=0$\\[0.1cm]
+Top plate: $u=1$, $v=0$ e $\psi=0$\\[0.1cm]
+Nodes: 3798\\[0.1cm]
+Elements: 7382\\[0.1cm]
+Re: 100
+\end{column}
+\begin{column}{0.25\textwidth} 
+\begin{tikzpicture}[scale=0.6]
+\draw [pattern=north east lines] (0,-0.1) -- (3,-0.1) -- (3,3) -- (2.9,3) -- (2.9,0) -- (0.1,0) -- (0.1,3) -- (0,3) -- cycle;
+ \draw [pattern=north east lines] (-0.1,3) -- (-0.1,3.1) -- (3.1,3.1) -- (3.1,3) -- cycle;
+
+ \draw [->,thick] (3.2,3.05)--(4.2,3.05) node[above] {$U_{top}$};
+
+ \draw [->,thick] (2.4,2.4) arc (45:-180:1.2);
+
+% \draw [->,thick] (-2,-0.1)--(-2,1.5) node[left] {$y$};
+% \draw [->,thick] (-2.1,0)--(-0.5,0) node[below] {$x$};
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\end{center}
+
+\begin{center}
+\begin{columns}[c]
+\begin{column}{0.55\textwidth} 
+\input{horizontalCavity}
+\end{column}
+
+\begin{column}{0.55\textwidth} 
+\hspace{0.5cm}
+\input{verticalCavity}
+\end{column}
+
+\end{columns}
+\end{center}
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\iffalse
+\begin{frame}
+ \frametitle{\small Validation - Lid Driven Cavity Flow}
+\vspace{-1cm}
+\begin{center}
+\begin{tikzpicture}[scale=0.8]
+\draw [pattern=north east lines] (0,-0.1) -- (3,-0.1) -- (3,3) -- (2.9,3) -- (2.9,0) -- (0.1,0) -- (0.1,3) -- (0,3) -- cycle;
+ \draw [pattern=north east lines] (-0.1,3) -- (-0.1,3.1) -- (3.1,3.1) -- (3.1,3) -- cycle;
+
+ \draw [->,thick] (3.2,3.05)--(4.2,3.05) node[above] {$U_{top}$};
+
+ \draw [->,thick] (2.4,2.4) arc (45:-180:1.2);
+
+% \draw [->,thick] (-2,-0.1)--(-2,1.5) node[left] {$y$};
+% \draw [->,thick] (-2.1,0)--(-0.5,0) node[below] {$x$};
+\end{tikzpicture}
+\end{center}
+\vspace{0.5cm}
+\small
+Boundaries Conditions:\\[0.2cm]
+Bottom and side plates: $u=0$, $v=0$ e $\psi=0$;\\[0.1cm]
+Top plate: $u=1$, $v=0$ e $\psi=0$
+\end{frame}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\iffalse
+\begin{frame}
+ \frametitle{\small Validation - Lid Driven Cavity Flow}
+\begin{figure}
+  \centering
+  \vspace{-1.5cm}
+  \includegraphics[scale=0.6]{images/Re_100_u_profile.pdf}
+\end{figure}
+\vspace{-0.2cm}
+\centering \scriptsize Centerline $u$ velocity profile ($x=0.5$) in a lid-driven cavity for $Re=100$.
+\end{frame}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\iffalse
+\begin{frame}
+ \frametitle{\small Validation - Lid Driven Cavity Flow}
+\begin{figure}
+  \centering
+  \vspace{-1.5cm}
+  \includegraphics[scale=0.6]{images/Re_100_v_profile.pdf}
+\end{figure}
+\vspace{-0.2cm}
+\centering \scriptsize Centerline $v$ velocity profile ($y=0.5$) in a lid-driven cavity for $Re=100$.
+\end{frame}
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+ \frametitle{\LARGE Coming Soon}
+\begin{center}
+\begin{itemize}
+ \item Backward-Facing Step Validation\\
+ \item Pulsation Flow Validation\\
+ \item Drug-Eluting Stent Cases
+\end{itemize}
+\end{center}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\iffalse
+\begin{frame}
+ \frametitle{\LARGE Validation - Backward-facing Step}
+\begin{center}
+ \Huge Coming Soon
+\end{center}
+\end{frame}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\iffalse
+\begin{frame}
+ \frametitle{\LARGE Validation - Pulsation Flow}
+\begin{center}
+ \Huge Coming Soon
+\end{center}
+\end{frame}
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\iffalse
+\begin{frame}
+  \vspace{-1cm}
+  \textcolor{gray}{1. Introduction}\\[0.1cm]
+  \textcolor{gray}{2. Mathematical Model}\\[0.1cm]
+  \textcolor{gray}{3. Validation}\\[0.1cm]
+  4. Results\\[0.1cm]
+  \textcolor{gray}{5. Conclusion}
+\end{frame}
+\fi
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\iffalse
+\begin{frame}
+ \frametitle{\LARGE Results}
+\begin{center}
+ \Huge Coming Soon
+\end{center}
+\end{frame}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\iffalse
+\begin{frame}
+ \frametitle{\LARGE Results}
+\begin{figure}
+  \vspace{-1cm}
+     \centering
+     \begin{minipage}{.45\linewidth}
+      \centering
+      \includegraphics[scale=0.15]{images/CurvedStrut.png}\\
+      \scriptsize (a)
+     \end{minipage}%
+     \begin{minipage}{.45\linewidth}
+      \centering
+      \includegraphics[scale=0.15]{images/RealStrut.png}\\
+      \scriptsize (b)
+     \end{minipage}
+\end{figure}
+\vspace{-0.3cm}
+\begin{center}
+\scriptsize 
+     Non-dimensional symmetric geometry for blood flow in coronary artery with drug-eluting stent placed by Wang et al. (2017):
+     (a) Curved Channel with Stent
+     (b) Real Channel with Stent.
+\end{center}
+\vspace{0.05cm}
+\small
+\begin{center}
+\begin{columns}[c]
+\begin{column}{0.8\textwidth} 
+Boundaries Conditions:\\[0.2cm]
+Inflow condition: $u=1$, $v=0$ e $\psi=y$;\\[0.1cm]
+Outflow condition: $\psi=y$;\\[0.1cm]
+Top plate: $u=0$, $v=0$, $\psi=1$;\\[0.1cm]
+Symmetry condition: $v=0$, $\psi=0$; \\[0.1cm]
+Drug-eluting stent: $u=0$, $v=0$, $\psi=1$ e $c=1$
+\end{column}
+\hspace{-1cm}
+\begin{column}{0.3\textwidth}
+$R=0.0015m$\\[0.1cm]
+$\mu=0.0035Pa.s$\\[0.1cm]
+$\rho=1060kg/m^3$\\[0.1cm]\\
+$u=12cm/s$\\[0.1cm]
+$Re=54.5$
+\end{column}
+\end{columns}
+\end{center}
+\end{frame}
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\iffalse
+\begin{frame}
+ \frametitle{\LARGE Results}
+\begin{figure}
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.08]{images/vel_RealStrut200.png}\\
+      \scriptsize t = 0.1
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.08]{images/vel_RealStrut1000.png}\\
+      \scriptsize t = 0.5
+     \end{minipage}
+     \begin{minipage}{.50\linewidth}
+     \medskip
+      \centering
+      \includegraphics[scale=0.08]{images/vel_RealStrut2000.png}\\
+      \scriptsize t = 1.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+     \medskip
+      \centering
+      \includegraphics[scale=0.08]{images/vel_RealStrut6000.png}\\
+      \scriptsize t = 3.0
+     \end{minipage}
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.08]{images/vel_RealStrut8000.png}\\
+      \scriptsize t = 4.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.08]{images/vel_RealStrut10000.png}\\
+      \scriptsize t = 5.0
+ \end{minipage}
+     \begin{minipage}{.50\linewidth}
+     \medskip
+      \centering
+      \includegraphics[scale=0.08]{images/vel_RealStrut14000.png}\\
+      \scriptsize t = 7.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+     \medskip
+      \centering
+      \includegraphics[scale=0.08]{images/vel_RealStrut20000.png}\\
+      \scriptsize t = 10.0
+     \end{minipage}
+\end{figure}
+\vspace{0cm}
+\centering \scriptsize Evolution in time and space of velocity field
+\end{frame}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\iffalse
+\begin{frame}
+ \frametitle{\LARGE Results - Velocity Field}
+
+\vspace{-0.8cm}
+\begin{figure}
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/vel_CurvedStrut2000.png}\\
+      \tiny t = 1.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/vel_RealStrut2000.png}\\
+      \tiny t = 1.0
+     \end{minipage}
+     \begin{minipage}{.50\linewidth}
+     \smallskip
+      \centering
+      \includegraphics[scale=0.075]{images/vel_CurvedStrut10000.png}\\
+      \tiny t = 5.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+     \smallskip
+      \centering
+      \includegraphics[scale=0.075]{images/vel_RealStrut10000.png}\\
+      \tiny t = 5.0
+     \end{minipage}
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/vel_CurvedStrut20000.png}\\
+      \tiny t = 10.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/vel_RealStrut20000.png}\\
+      \tiny t = 10.0
+     \end{minipage}
+\end{figure}
+\vspace{-0.2cm}
+\centering \tiny Evolution in time and space of velocity field:\\
+                 Curved Channel (left column) and Real Channel (right column)
+\vspace{-0.5cm}
+\begin{figure}
+     \begin{minipage}{.50\linewidth}
+     \medskip
+      \centering
+      \includegraphics[scale=0.35]{images/vel_CurvedStrut_evol.pdf}\\
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+     \medskip
+      \centering
+      \includegraphics[scale=0.35]{images/vel_RealStrut_evol.pdf}\\
+     \end{minipage}
+\end{figure}
+\vspace{-0.2cm}
+\centering \tiny Evolution of velocity profile in centerline ($x=0.5L$):\\
+                       (a) Curved Channel and (b) Real Channel
+\end{frame}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\iffalse
+\begin{frame}
+ \frametitle{\LARGE Results - Concentration Field}
+\vspace{-0.7cm}
+\begin{figure}
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc1_CurvedStrut2000.png}\\
+      \tiny t = 1.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc10_CurvedStrut5000.png}\\
+      \tiny t = 1.0
+     \end{minipage}
+     \begin{minipage}{.50\linewidth}
+     \medskip
+      \centering
+      \includegraphics[scale=0.075]{images/conc1_CurvedStrut10000.png}\\
+      \tiny t = 5.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+     \medskip
+      \centering
+      \includegraphics[scale=0.075]{images/conc10_CurvedStrut25000.png}\\
+      \tiny t = 5.0
+     \end{minipage}
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc1_CurvedStrut20000.png}\\
+      \tiny t = 10.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc10_CurvedStrut50000.png}\\
+      \tiny t = 10.0
+     \end{minipage}
+\end{figure}
+\vspace{-0.2cm}
+\centering \scriptsize Evolution in time and space of concentration field in Curved Channel:\\
+                 $Sc=1$ (left column) and $Sc=10$ (right column)
+\vspace{0cm}
+\begin{figure}
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc1_RealStrut2000.png}\\
+      \tiny t = 1.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc10_RealStrut5000.png}\\
+      \tiny t = 1.0
+     \end{minipage}
+     \begin{minipage}{.50\linewidth}
+     \medskip
+      \centering
+      \includegraphics[scale=0.075]{images/conc1_RealStrut10000.png}\\
+      \tiny t = 5.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+     \medskip
+      \centering
+      \includegraphics[scale=0.075]{images/conc10_RealStrut25000.png}\\
+      \tiny t = 5.0
+     \end{minipage}
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc1_RealStrut20000.png}\\
+      \tiny t = 10.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc10_RealStrut50000.png}\\
+      \tiny t = 10.0
+     \end{minipage}
+\end{figure}
+\vspace{-0.2cm}
+\centering \scriptsize Evolution in time and space of concentration field in Real Channel:\\
+                 $Sc=1$ (left column) and $Sc=10$ (right column)
+\end{frame}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\iffalse
+\begin{frame}
+  \vspace{-1cm}
+  \textcolor{gray}{1. Introduction}\\[0.1cm]
+  \textcolor{gray}{2. Mathematical Model}\\[0.1cm]
+  \textcolor{gray}{3. Validation}\\[0.1cm]
+  \textcolor{gray}{4. Results}\\[0.1cm]
+  5. Conclusion
+\end{frame}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\iffalse
+\begin{frame}
+ \frametitle{\LARGE Conclusion}
+ \vspace{-1cm}
+\begin{enumerate}
+ \justifying
+ \small
+% \item Was observed that the species transport in blood flow is directly influenced
+%       by drug used in stent production\\
+
+% \vspace{0.3cm}
+ 
+ \item The streamfunction-vorticity formulation showed an useful approach for to calculate
+       the velocity and concentration fields since the variables are scalars allowing a
+       smooth implementation\\
+
+ \vspace{0.3cm}
+
+ \item Due to generalized construction of the code, the simulator is able to describe
+       drug-eluting stent problem in coronary artery as well as flows of Newtonian fluids
+       with scalar transport (concentration or temperature)\\
+
+ \vspace{0.3cm}
+
+ \item The ALE description allows moving boundary problems to be simulated
+\end{enumerate}
+\end{frame}
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{\LARGE Work Plan}
+ \begin{figure}
+  \hspace{-0.8cm}
+  \includegraphics[scale=0.4]{images/workplan.png}\\
+ \end{figure}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{\LARGE Final Presentation}
+ \begin{center}
+ \LARGE Expected Date for Final Presentation
+ \begin{figure}
+  \includegraphics[scale=0.6]{images/calendar.png}\\
+ \end{figure}
+\end{center}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+ \centering
+ \vspace{-1cm}
+ \Huge Thank you!\\
+ \vspace{0.5cm}
+ \small marquesleandro67@gmail.com\\
+ \small gustavo.rabello@mecanica.coppe.ufrj.br\\
+ \small jose.pontes@uerj.br\\
+ \vspace{1.0cm}
+ \small The authors thank the FAPERJ (Research Support Foundation of the State of Rio de Janeiro)
+        for its financial support
+
+ \vspace{-0.2cm}
+ \begin{figure}
+  \centering
+  \includegraphics[scale=0.4]{images/faperj.jpg}\\
+ \end{figure}
+\end{frame}
+
+
+
+
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
