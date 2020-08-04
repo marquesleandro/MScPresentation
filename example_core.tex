@@ -33,8 +33,7 @@ Motivation:
 Goals:
 \begin{itemize}
  \justifying
- \item To develop a Finite Element code for the Vorticity-Streamfunction Formulation 
-       with species transport equation using the Arbitrary Lagrangian-Eulerian (ALE) approach and semi-Lagrangian Method \\
+ \item To develop a ALE-FE code for the Vorticity-Streamfunction Formulation 
 
 
  \vspace{0.2cm}
@@ -156,7 +155,7 @@ Disadvantages:
 
 
  % Eulerian legend 
- \draw [latex-latex] (-0.3,5) -- (-0.3,6);
+ \draw [newlatex-latex] (-0.3,5) -- (-0.3,6);
  \node at (-0.5,5.5) {t};
  \node at (3,6.5) {\scriptsize Lagrangian description};
  % -------------------------------------------------------------------
@@ -218,7 +217,7 @@ Disadvantages:
 
 
  % Eulerian legend 
- \draw [latex-latex] (-0.3,2.5) -- (-0.3,3.5);
+ \draw [newlatex-latex] (-0.3,2.5) -- (-0.3,3.5);
  \node at (-0.5,3) {t};
  \node at (3,4.0) {\scriptsize Eulerian description};
  % -------------------------------------------------------------------
@@ -280,7 +279,7 @@ Disadvantages:
 
 
  % ALE legend 
- \draw [latex-latex] (-0.3,0) -- (-0.3,1);
+ \draw [newlatex-latex] (-0.3,0) -- (-0.3,1);
  \node at (-0.5,0.5) {t};
  \node at (3,1.5) {\scriptsize ALE description};
  
@@ -337,7 +336,7 @@ Assumptions [3]:\\[0.1cm]
 \end{equation*}
 \medskip
 \begin{equation*}
- \frac{\partial c}{\partial t} + \left( \mathbf{v} - \mathbf{\hat{v}} \right) \cdot \nabla c = \frac{1}{ReSc} \nabla^{2} c 
+ \frac{\partial e}{\partial t} + \left( \mathbf{v} - \mathbf{\hat{v}} \right) \cdot \nabla e = \frac{1}{ReSc} \nabla^{2} e
 \end{equation*}
 \end{center}
 \end{columns}
@@ -383,7 +382,7 @@ The convective term was replaced by material derivative in the direction of char
 \end{equation*}
 \\
 \begin{equation*}
- \frac{D c}{D t} = \frac{1}{ReSc} \nabla^{2} c 
+ \frac{D e}{D t} = \frac{1}{ReSc} \nabla^{2} e
 \end{equation*}
 \end{columns}
 
@@ -410,8 +409,8 @@ The departure node is calculated by $x_{d}^{n} = x_{i}^{n+1} - \left( \mathbf{v}
 
  % material points
  \draw[dashed] (2.8,2.5) -- (3.12,2.8);
- \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (2.8,2.5) {};
- \node[square, fill=white, draw, inner sep=0pt, minimum size=8pt] at (3.12,2.8) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=6pt] at (2.8,2.5) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=6pt] at (3.12,2.8) {};
  
 
  % nodes
@@ -486,7 +485,7 @@ Disadvantages:
  \nabla^{2} \psi = - \omega
 \end{equation*}
 \begin{equation*}
- \frac{c_{i}^{n+1} - c_{d}^{n}}{\Delta t} = \frac{1}{ReSc} \nabla^{2} c^{n+1}
+ \frac{e_{i}^{n+1} - e_{d}^{n}}{\Delta t} = \frac{1}{ReSc} \nabla^{2} e^{n+1}
 \end{equation*}
 \end{columns}
 
@@ -502,13 +501,16 @@ Pironneau, O. On the transport-diffusion algorithm and its applications to the N
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 \begin{frame} 
  \frametitle{\LARGE Searching Procedure}
-
+\vspace{-1cm}
 \begin{columns}[c]
 \column{.5\textwidth}
+\justifying
+The convective term was replaced by material derivative in the direction of characteristic trajectory, that is:
+ $\frac{D(\cdot)}{Dt} = \frac{\partial (\cdot)}{\partial t} + (\mathbf{v} - \mathbf{\hat{v}}) \cdot \nabla (\cdot)$
 
+\column{.5\textwidth}
 \begin{center}
 \begin{tikzpicture}[scale=2.5]
 
@@ -556,61 +558,65 @@ Pironneau, O. On the transport-diffusion algorithm and its applications to the N
  \draw (Q) -- (G) -- (H) -- cycle;
  \draw (R) -- (G) -- (R) -- cycle;
  \draw (S) -- (J) -- (F) -- cycle;
- \draw[red,line width=2pt] (A) -- (C) -- (G) -- cycle;
+ \draw[red,line width=0.04cm] (A) -- (C) -- (G) -- cycle;
  
 
 % arrow
  \draw[dashed,line width=0.03cm,-stealth]  (2.57,1.20)  -- (J) ;
 
  % departure nodes
- \node[square, fill=white, draw, inner sep=0pt, minimum size=7.8pt] at (2.57,1.20) {};
- \node[square, fill=white, draw, inner sep=0pt, minimum size=7.8pt] at (J) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=4pt] at (2.57,1.20) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=5pt] at (J) {};
 
  % searching procedure path
- \draw[red, line width=2pt]  (J)--(F) ;
- \draw[red, line width=2pt]  (F)--(R) ;
- \draw[red, line width=2pt]  (R)--(A) ;
+ \draw[red, line width=0.04cm]  (J)--(F) ;
+ \draw[red, line width=0.04cm]  (F)--(R) ;
+ \draw[red, line width=0.04cm]  (R)--(A) ;
 
  % draw nodes
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (A) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (C) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (D) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (F) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (G) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (H) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (I) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (J) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (K) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (L) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (M) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (N) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (O) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (P) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (Q) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (R) {};
- \node[circle, fill=black, inner sep=0pt, minimum size=5.5pt] at (S) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (A) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (C) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (D) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (F) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (G) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (H) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (I) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=3pt] at (J) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (K) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (L) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (M) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (N) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (O) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (P) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (Q) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (R) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (S) {};
 
 
  
 
  
  % legend
- \node[draw=none, scale=1.0] at (3.9,1.0) {\small $domain$};
- \node[draw=none, scale=1.0] at (3.8,1.65) {\small $boundary$};
+ \node[draw=none, scale=0.9] at (3.9,1.0) {\small $domain$};
+ \node[draw=none, scale=0.9] at (3.8,1.65) {\small $boundary$};
 
- \node[draw=none, scale=1.0] at (3.32,0.94) {\small $x_{i}$};
- \node[draw=none, scale=1.0] at (2.65,1.27) {\small $x_{d}$};
+ \node[draw=none, scale=0.8] at (3.33,0.94) {\small $\textbf{x}_{i}$};
+ \node[draw=none, scale=0.8] at (2.65,1.27) {\small $\textbf{x}_{d}$};
 
 
 \end{tikzpicture}
 \end{center}
+\end{columns}
 
 
 
-
+\vspace{0.5cm}
+\begin{columns}[c]
+\column{.5\textwidth}
+\justifying
+The departure node is calculated by $x_{d}^{n} = x_{i}^{n+1} - \left( \mathbf{v} - \mathbf{\hat{v}}\right) \Delta t$. Then, a searching procedure is required to find $x_{d}^{n}$ using barycentric coordinates
 
 \column{.5\textwidth}
-\vspace{-0.5cm}
 \begin{center}
 \begin{tikzpicture}[scale=2.5]
 
@@ -684,17 +690,18 @@ Pironneau, O. On the transport-diffusion algorithm and its applications to the N
  \draw[dashed,line width=0.02cm] (J) edge (2.90,1.45);
  \draw[dashed,line width=0.02cm] (J) edge (2.4,1.05) ;
 
- \node[circle, fill=black, inner sep=0pt, minimum size=4pt] at (J) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=5pt] at (J) {};
+ \node[circle, fill=black, inner sep=0pt, minimum size=3pt] at (J) {};
 
  % departure nodes
- \node[circle, fill=white, draw, inner sep=0pt, minimum size=4pt] at (2.95,0.65) {};
- \node[circle, fill=white, draw, inner sep=0pt, minimum size=4pt] at (2.90,1.45) {};
- \node[circle, fill=white, draw, inner sep=0pt, minimum size=4pt] at (2.4,1.05) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=4pt] at (2.95,0.65) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=4pt] at (2.90,1.45) {};
+ \node[square, fill=white, draw, inner sep=0pt, minimum size=4pt] at (2.4,1.05) {};
 
 
  
  % legend
- \node[draw=none, scale=0.8] at (3.23,0.97) {\small $\omega_{i}$};
+ \node[draw=none, scale=0.8] at (3.23,0.97) {\small $\textbf{x}_{i}$};
  
  \node[draw=none, scale=0.8] at (3.05,0.64) {$1$};
  \node[draw=none, scale=0.8] at (3.00,1.45) {$2$};
@@ -771,7 +778,7 @@ Pironneau, O. On the transport-diffusion algorithm and its applications to the N
 \end{equation*}
 \medskip
 \begin{equation*}
- \left[ \frac{\mathbf{M}}{\Delta t} + \frac{\mathbf{K}}{ReSc} \right] c_{i}^{n+1} = \frac{\mathbf{M}}{\Delta t} c_{d}^{n}
+ \left[ \frac{\mathbf{M}}{\Delta t} + \frac{\mathbf{K}}{ReSc} \right] e_{i}^{n+1} = \frac{\mathbf{M}}{\Delta t} e_{d}^{n}
 \end{equation*}
 \end{center}
 
@@ -817,13 +824,12 @@ due to ALE description, it was used the Laplacian Smoothing Method [5]
 The new node position $\mathbf{\hat{x}_{i}}$ can be approximated by:
 
 \begin{equation*}
-\mathbf{\hat{x}_{i}} = \sum_{i}^{np} \sum_{j}^{N_{1}} w_{ij} (\mathbf{x}_{j} - \mathbf{x}_{i})
+\mathbf{\hat{x}_{i}} = w_{ij} \sum_{j}^{N_{1}} (\mathbf{x}_{j} - \mathbf{x}_{i})
 \end{equation*}
 
 \smallskip
 where,
-$np$ is node number,
-$N_{1}$ is the 1-ring neighbors of a node,
+$N_{1}$ is the 1-ring neighbors of the node,
 $w_{ij}$ is the weight and was calculated by the inverse distance from neighbors vertices
 
 
@@ -839,13 +845,25 @@ $w_{ij}$ is the weight and was calculated by the inverse distance from neighbors
 \end{center}
 \end{columns}
 
-\vspace{1.1cm}
-\tiny [5] Desbrun,  M.  Meyer,  P.  Schröder,  A.  Barr,  Implicit  fairing  of  irregular  meshes  using  diffusion  and  curvature  flow,  in:  Proceedingsof  Siggraph,  1999,  pp.  317–324
-
+\vspace{1cm}
+\tiny [5] Zheng,  Y.  Lewis,  R.  Gethin,  D., Three-dimensional unstructured mesh generation: Part 2. surface meshes. Computer Methods in Applied Mechanics and Engineering, Amsterdam: North-Holland Pub. Co., c1972-, v. 134, n. 3, p. 269–284, 1996.
 \end{frame}
 
 
 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+ \frametitle{\LARGE Code Framework}
+\vspace{-0.5cm}
+\begin{center}
+  \includegraphics[scale=0.3]{images/uml.png}\\[0.3cm]
+  \caption{Simplified Class Diagram}
+\end{center}
+\end{frame}
 
 
 
@@ -857,9 +875,9 @@ $w_{ij}$ is the weight and was calculated by the inverse distance from neighbors
 \begin{table}[H]
 \centering
 \begin{tabular}{ccc}
-\toprule
-\textbf{Process} & \textbf{AVG Computational Cost} (\%) \\
-\midrule
+\hline
+\textbf{Process} & \textbf{AVG Computational Cost} (\%) \\[0.5ex]
+\hline\hline
 Mesh import & 1.24 \\
 Assembly & 73.87 \\
 BC Apply & 6.70 \\
@@ -867,9 +885,9 @@ Mesh update & 10.05 \\
 Semi-Lagrangian & 2.27 \\
 Vorticity Solver & 5.51 \\
 VTK export & 0.36 \\
-\bottomrule
-\end{tabular}
-\caption{Average computational cost for several linear triangular elements.}
+\hline
+\end{tabular}\\[0.3cm]
+Average computational cost for the linear triangular element.
 \label{time ratio}
 \end{table}
 
@@ -1162,6 +1180,50 @@ Re: 100
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame} 
+ \frametitle{\Large Validation - Pure Advection Flow}
+\vspace{-1cm}
+\begin{center}
+\begin{columns}[c]
+\begin{column}{0.8\textwidth} 
+\hspace{1cm} \textbf{Hipóteses:}\\[0.1cm] 
+\hspace{1cm}  1. Fluido como um Meio Contínuo\\[0.1cm]
+\hspace{1cm}  2. Fluido incompressível\\[0.1cm]
+\hspace{1cm}  3. Fluido newtoniano\\[0.1cm]
+\hspace{1cm}  4. Escoamento monofásico\\[0.1cm]
+\hspace{1cm}  5. Escoamento bidimensional\\[0.1cm]
+\hspace{1cm}  6. Elevado número de Reynolds ($Re = \infty$)
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{tikzpicture}[scale=0.8]
+ \draw (0,0) -- (3,0) -- (3,3) -- (0,3) -- cycle;
+
+ \draw [->,thick] (2.4,2.4) arc (45:230:1.2);
+
+% \draw [->,thick] (-2,-0.1)--(-2,1.5) node[left] {$y$};
+% \draw [->,thick] (-2.1,0)--(-0.5,0) node[below] {$x$};
+
+ \draw (1.5,0.5) circle (0.3);
+ \draw (1.5,0.5) circle (0.2);
+ \draw (1.5,0.5) circle (0.1);
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\end{center}
+\vspace{0.5cm}
+\begin{equation*}
+ \frac{\partial c}{\partial t} 
+ + 
+ \textbf{v} \cdot \nabla c
+ = 0
+\end{equation*}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 \iffalse
 \begin{frame}
  \frametitle{\small Validation - Lid Driven Cavity Flow}
@@ -1218,7 +1280,7 @@ Top plate: $u=1$, $v=0$ e $\psi=0$
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\iffalse
 \begin{frame}
  \frametitle{\LARGE Coming Soon}
 \begin{center}
@@ -1229,7 +1291,7 @@ Top plate: $u=1$, $v=0$ e $\psi=0$
 \end{itemize}
 \end{center}
 \end{frame}
-
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1255,16 +1317,15 @@ Top plate: $u=1$, $v=0$ e $\psi=0$
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\iffalse
 \begin{frame}
   \vspace{-1cm}
   \textcolor{gray}{1. Introduction}\\[0.1cm]
   \textcolor{gray}{2. Mathematical Model}\\[0.1cm]
-  \textcolor{gray}{3. Validation}\\[0.1cm]
-  4. Results\\[0.1cm]
-  \textcolor{gray}{5. Conclusion}
+  \textcolor{gray}{3. Computational Code}\\[0.1cm]
+  \textcolor{gray}{4. Validation}\\[0.1cm]
+  5. Results\\[0.1cm]
+  \textcolor{gray}{6. Conclusion}
 \end{frame}
-\fi
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \iffalse
@@ -1278,7 +1339,6 @@ Top plate: $u=1$, $v=0$ e $\psi=0$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\iffalse
 \begin{frame}
  \frametitle{\LARGE Results}
 \begin{figure}
@@ -1325,7 +1385,6 @@ $Re=54.5$
 \end{columns}
 \end{center}
 \end{frame}
-\fi
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1386,7 +1445,6 @@ $Re=54.5$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\iffalse
 \begin{frame}
  \frametitle{\LARGE Results - Velocity Field}
 
@@ -1445,11 +1503,9 @@ $Re=54.5$
 \centering \tiny Evolution of velocity profile in centerline ($x=0.5L$):\\
                        (a) Curved Channel and (b) Real Channel
 \end{frame}
-\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\iffalse
 \begin{frame}
  \frametitle{\LARGE Results - Concentration Field}
 \vspace{-0.7cm}
@@ -1484,6 +1540,88 @@ $Re=54.5$
      \begin{minipage}{.50\linewidth}
       \centering
       \includegraphics[scale=0.075]{images/conc10_CurvedStrut50000.png}\\
+      \tiny t = 10.0
+     \end{minipage}
+\end{figure}
+\vspace{-0.2cm}
+\centering \scriptsize Evolution in time and space of concentration field in Curved Channel:\\
+                 $Sc=1$ (left column) and $Sc=10$ (right column)
+\vspace{0cm}
+\begin{figure}
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc1_CurvedStrut2000.png}\\
+      \tiny t = 1.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc10_CurvedStrut5000.png}\\
+      \tiny t = 1.0
+     \end{minipage}
+     \begin{minipage}{.50\linewidth}
+     \medskip
+      \centering
+      \includegraphics[scale=0.075]{images/conc1_CurvedStrut10000.png}\\
+      \tiny t = 5.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+     \medskip
+      \centering
+      \includegraphics[scale=0.075]{images/conc10_CurvedStrut25000.png}\\
+      \tiny t = 5.0
+     \end{minipage}
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc1_CurvedStrut20000.png}\\
+      \tiny t = 10.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc10_CurvedStrut50000.png}\\
+      \tiny t = 10.0
+     \end{minipage}
+\end{figure}
+\vspace{-0.2cm}
+\centering \scriptsize Evolution in time and space of concentration field in Real Channel:\\
+                 $Sc=1$ (left column) and $Sc=10$ (right column)
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+ \frametitle{\LARGE Results - Concentration Field}
+\vspace{-0.7cm}
+\begin{figure}
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc1_RealStrut2000.png}\\
+      \tiny t = 1.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc10_RealStrut5000.png}\\
+      \tiny t = 1.0
+     \end{minipage}
+     \begin{minipage}{.50\linewidth}
+     \medskip
+      \centering
+      \includegraphics[scale=0.075]{images/conc1_RealStrut10000.png}\\
+      \tiny t = 5.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+     \medskip
+      \centering
+      \includegraphics[scale=0.075]{images/conc10_RealStrut25000.png}\\
+      \tiny t = 5.0
+     \end{minipage}
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc1_RealStrut20000.png}\\
+      \tiny t = 10.0
+     \end{minipage}%
+     \begin{minipage}{.50\linewidth}
+      \centering
+      \includegraphics[scale=0.075]{images/conc10_RealStrut50000.png}\\
       \tiny t = 10.0
      \end{minipage}
 \end{figure}
@@ -1529,23 +1667,23 @@ $Re=54.5$
 \centering \scriptsize Evolution in time and space of concentration field in Real Channel:\\
                  $Sc=1$ (left column) and $Sc=10$ (right column)
 \end{frame}
-\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\iffalse
+
+
+
 \begin{frame}
   \vspace{-1cm}
   \textcolor{gray}{1. Introduction}\\[0.1cm]
   \textcolor{gray}{2. Mathematical Model}\\[0.1cm]
-  \textcolor{gray}{3. Validation}\\[0.1cm]
-  \textcolor{gray}{4. Results}\\[0.1cm]
-  5. Conclusion
+  \textcolor{gray}{3. Computational Code}\\[0.1cm]
+  \textcolor{gray}{4. Validation}\\[0.1cm]
+  \textcolor{gray}{5. Results}\\[0.1cm]
+  6. Conclusion
 \end{frame}
-\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\iffalse
 \begin{frame}
  \frametitle{\LARGE Conclusion}
  \vspace{-1cm}
@@ -1572,11 +1710,11 @@ $Re=54.5$
  \item The ALE description allows moving boundary problems to be simulated
 \end{enumerate}
 \end{frame}
-\fi
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\iffalse
 \begin{frame}
 \frametitle{\LARGE Work Plan}
  \begin{figure}
@@ -1584,10 +1722,10 @@ $Re=54.5$
   \includegraphics[scale=0.4]{images/workplan.png}\\
  \end{figure}
 \end{frame}
-
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\iffalse
 \begin{frame}
 \frametitle{\LARGE Final Presentation}
  \begin{center}
@@ -1597,7 +1735,7 @@ $Re=54.5$
  \end{figure}
 \end{center}
 \end{frame}
-
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
