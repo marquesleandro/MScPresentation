@@ -793,21 +793,10 @@ $\mathbf{M} v_{y} = - \mathbf{G_{x}} \psi$
 
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}
-  \vspace{-1cm}
-  \textcolor{gray}{1. Introduction}\\[0.1cm]
-  \textcolor{gray}{2. Mathematical Model}\\[0.1cm]
-  3. Computational Code\\[0.1cm]
-  \textcolor{gray}{4. Validation}\\[0.1cm]
-  \textcolor{gray}{5. Results}\\[0.1cm]
-  \textcolor{gray}{6. Conclusion}
-\end{frame}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 
 \begin{frame}
@@ -855,6 +844,23 @@ $w_{ij}$ is the weight and was calculated by the inverse distance from neighbors
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\begin{frame}
+  \vspace{-1cm}
+  \textcolor{gray}{1. Introduction}\\[0.1cm]
+  \textcolor{gray}{2. Mathematical Model}\\[0.1cm]
+  3. Computational Code\\[0.1cm]
+  \textcolor{gray}{4. Validation}\\[0.1cm]
+  \textcolor{gray}{5. Results}\\[0.1cm]
+  \textcolor{gray}{6. Conclusion}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 
 \begin{frame}
  \frametitle{\LARGE Code Framework}
@@ -1046,10 +1052,11 @@ u = \frac{4 u_{max}}{L^2} y \big[ L - y \big]
 \begin{columns}[c]
 \begin{column}{0.55\textwidth} 
 \small
-Boundaries Conditions:\\[0.2cm]
-Inflow condition: $u=u_{analytical}$, $v=0$
+Inflow condition: $u=u_{analytical}$, $v=0$\\[0.1cm]
 Top plate: $u=0$, $v=0$, $\psi=1$\\[0.1cm]
-Bottom plate: $u=0$, $v=0$, $\psi=0$
+Bottom plate: $u=0$, $v=0$, $\psi=0$\\[0.1cm]
+Vorticity condition: $\omega = \nabla \times \textbf{v}$\\[0.1cm]
+$\beta_{1} = 0$ \qquad $\beta_{2} = 1$
 \end{column}
 \begin{column}{0.35\textwidth} 
 \begin{tikzpicture}[scale=0.8]
@@ -1086,28 +1093,71 @@ Bottom plate: $u=0$, $v=0$, $\psi=0$
  \draw [->,thick] (1.0,0.3) to (1.28,0.3);
  \draw [->,thick] (1.0,0.1) to (1.2,0.1);
 \end{tikzpicture}\\[0.2cm]
-\small Nodes: 1757\\
-\small Elements: 3263\\
-\small Relative Error: 1.2\%
+\small Nodes: 3835\\
+\small Elements: 7299\\
+\small Relative Error: 0.4\%
 \end{column}
 \end{columns}
 \end{center}
 
-\vspace{0.2cm}
 \begin{center}
 \begin{columns}[c]
 \begin{column}{0.55\textwidth} 
-\input{horizontalVelocity}
+  \includegraphics[scale=0.4]{images/poiseuille_velocity.pdf}
 \end{column}
 
 \begin{column}{0.55\textwidth} 
 \hspace{0.5cm}
-\input{relativeError}
+  \includegraphics[scale=0.4]{images/poiseuille_error.pdf}
 \end{column}
 
 \end{columns}
 \end{center}
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+ \frametitle{\LARGE Validation - Half Poiseuille Flow}
+\vspace{-0.55cm}
+\begin{center}
+\begin{columns}[c]
+\begin{column}{0.55\textwidth} 
+\small
+Inflow condition: $u=u_{analytical}$, $v=0$\\[0.1cm]
+Top plate: $u=0$, $v=0$, $\psi=1$\\[0.1cm]
+Symmetric axis: $v=0$, $\psi=0$\\[0.1cm]
+Vorticity condition: $\omega = \nabla \times \textbf{v}$\\[0.1cm]
+$\beta_{1} = 0$ \qquad $\beta_{2} = 1$
+\end{column}
+\begin{column}{0.35\textwidth} 
+\begin{tikzpicture}[scale=0.8]
+ \draw [pattern=north east lines] (0,1) -- (0,1.1) -- (5,1.1) -- (5,1) -- cycle;
+ \draw [dashed] (-0.3,0.0) to (5.3,0.0);
+
+ \node [draw=none] at (4.1,-0.3) {\tiny symmetry};
+
+ \draw [dotted] (2.5,0.0) to (2.5,1.0);
+ \draw  (2.8,0.0) to [bend right=20] (2.5,1.0);
+
+ \draw [->,thick] (2.5,0.0) to (2.8,0.0);
+ \draw [->,thick] (2.5,0.3) to (2.78,0.3);
+ \draw [->,thick] (2.5,0.6) to (2.71,0.6);
+ \draw [->,thick] (2.5,0.85) to (2.6,0.85);
+\end{tikzpicture}\\
+\small Nodes: 3835\\
+\small Elements: 7299\\
+\end{column}
+\end{columns}
+\end{center}
+
+\vspace{-0.5cm}
+\begin{center}
+  \includegraphics[scale=0.47]{images/half_poiseuille_velocity.pdf}
+
+\end{center}
+\end{frame}
+
 
 
 
@@ -1133,17 +1183,16 @@ Bottom plate: $u=0$, $v=0$, $\psi=0$
 
 \begin{frame}
  \frametitle{\LARGE Validation - Lid Driven Cavity Flow}
-\vspace{-0.3cm}
+\vspace{-1.0cm}
 \begin{center}
 \begin{columns}[c]
 \begin{column}{0.65\textwidth} 
 \small
-Boundaries Conditions:\\[0.2cm]
 Bottom and side plates: $u=0$, $v=0$ e $\psi=0$\\[0.1cm]
 Top plate: $u=1$, $v=0$ e $\psi=0$\\[0.1cm]
-Nodes: 3798\\[0.1cm]
-Elements: 7382\\[0.1cm]
-Re: 100
+Vorticity condition: $\omega = \nabla \times \textbf{v}$\\[0.1cm]
+$\beta_{1} = 0$ \qquad $\beta_{2} = 1$\\[0.1cm] 
+$Re = 100$
 \end{column}
 \begin{column}{0.25\textwidth} 
 \begin{tikzpicture}[scale=0.6]
@@ -1156,20 +1205,23 @@ Re: 100
 
 % \draw [->,thick] (-2,-0.1)--(-2,1.5) node[left] {$y$};
 % \draw [->,thick] (-2.1,0)--(-0.5,0) node[below] {$x$};
-\end{tikzpicture}
+\end{tikzpicture}\\
+\small Nodes: 1563\\
+\small Elements: 2988\\
 \end{column}
 \end{columns}
 \end{center}
 
+\vspace{-0.5cm}
 \begin{center}
 \begin{columns}[c]
 \begin{column}{0.55\textwidth} 
-\input{horizontalCavity}
+      \includegraphics[scale=0.41]{./images/Re_100_u_profile.pdf}\\
 \end{column}
 
 \begin{column}{0.55\textwidth} 
 \hspace{0.5cm}
-\input{verticalCavity}
+      \includegraphics[scale=0.41]{./images/Re_100_v_profile.pdf}\\
 \end{column}
 
 \end{columns}
@@ -1186,13 +1238,14 @@ Re: 100
 \begin{center}
 \begin{columns}[c]
 \begin{column}{0.8\textwidth} 
-\hspace{1cm} \textbf{Hipóteses:}\\[0.1cm] 
-\hspace{1cm}  1. Fluido como um Meio Contínuo\\[0.1cm]
-\hspace{1cm}  2. Fluido incompressível\\[0.1cm]
-\hspace{1cm}  3. Fluido newtoniano\\[0.1cm]
-\hspace{1cm}  4. Escoamento monofásico\\[0.1cm]
-\hspace{1cm}  5. Escoamento bidimensional\\[0.1cm]
-\hspace{1cm}  6. Elevado número de Reynolds ($Re = \infty$)
+\hspace{1cm} \textbf{Assumptions}\\[0.1cm] 
+\hspace{1cm}  1. Continuum hypothesis\\[0.1cm]
+\hspace{1cm}  2. Homogeneous and Isotropic\\[0.1cm]
+\hspace{1cm}  3. Incompressible\\[0.1cm]
+\hspace{1cm}  4. Newtonian\\[0.1cm]
+\hspace{1cm}  5. Two-dimensional Flow \\[0.1cm]
+\hspace{1cm}  6. Single-phase Flow\\[0.1cm]
+\hspace{1cm}  7. High Reynolds number ($Re = \infty$)
 \end{column}
 \begin{column}{0.5\textwidth}
 \begin{tikzpicture}[scale=0.8]
@@ -1212,12 +1265,153 @@ Re: 100
 \end{center}
 \vspace{0.5cm}
 \begin{equation*}
- \frac{\partial c}{\partial t} 
+ \frac{\partial \alpha}{\partial t} 
  + 
- \textbf{v} \cdot \nabla c
+ \textbf{v} \cdot \nabla \alpha
  = 0
 \end{equation*}
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame} 
+ \frametitle{\normalsize Linear Triangular Element}
+\vspace{-1.0cm}
+\begin{center}
+\begin{figure}[H]
+     \centering
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.33]{./images/SLlinear0.pdf}\\
+      \tiny initial 
+     \end{minipage}%
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.33]{./images/SLlinear1.pdf}\\
+      \tiny 1/4 rotation
+     \end{minipage}
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.33]{./images/SLlinear2.pdf}\\
+      \tiny 1/2 rotation
+     \end{minipage}%
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.33]{./images/SLlinear3.pdf}\\
+      \tiny 3/4 rotation
+     \end{minipage}
+\end{figure}
+\end{center}
+\end{frame} 
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame} 
+ \frametitle{\normalsize Linear Triangular Element}
+\vspace{-1.0cm}
+\begin{center}
+\begin{figure}[H]
+     \centering
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.22]{./images/figSLlinear0.png}\\
+      \tiny initial 
+     \end{minipage}%
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.22]{./images/figSLlinear1.png}\\
+      \tiny 1/4 rotation
+     \end{minipage}\\[0.3cm]
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.22]{./images/figSLlinear2.png}\\
+      \tiny 1/2 rotation
+     \end{minipage}%
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.22]{./images/figSLlinear3.png}\\
+      \tiny 3/4 rotation
+     \end{minipage}
+\end{figure}
+\end{center}
+\end{frame} 
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} 
+ \frametitle{\normalsize Quadratic Triangular Element}
+\vspace{-1.0cm}
+\begin{center}
+\begin{figure}[H]
+     \centering
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.33]{./images/SLquad0.pdf}\\
+      \tiny initial 
+     \end{minipage}%
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.33]{./images/SLquad1.pdf}\\
+      \tiny 1/4 rotation
+     \end{minipage}
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.33]{./images/SLquad2.pdf}\\
+      \tiny 1/2 rotation
+     \end{minipage}%
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.33]{./images/SLquad3.pdf}\\
+      \tiny 3/4 rotation
+     \end{minipage}
+\end{figure}
+\end{center}
+\end{frame} 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame} 
+ \frametitle{\normalsize Quadratic Triangular Element}
+\vspace{-1.0cm}
+\begin{center}
+\begin{figure}[H]
+     \centering
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.22]{./images/figSLquad0.png}\\
+      \tiny initial 
+     \end{minipage}%
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.22]{./images/figSLquad1.png}\\
+      \tiny 1/4 rotation
+     \end{minipage}\\[0.3cm]
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.22]{./images/figSLquad2.png}\\
+      \tiny 1/2 rotation
+     \end{minipage}%
+     \begin{minipage}{.5\linewidth}
+      \centering
+      \includegraphics[scale=0.22]{./images/figSLquad3.png}\\
+      \tiny 3/4 rotation
+     \end{minipage}
+\end{figure}
+\end{center}
+\end{frame} 
+
+
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
