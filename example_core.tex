@@ -507,8 +507,9 @@ Pironneau, O. On the transport-diffusion algorithm and its applications to the N
 \begin{columns}[c]
 \column{.5\textwidth}
 \justifying
-The convective term was replaced by material derivative in the direction of characteristic trajectory, that is:
- $\frac{D(\cdot)}{Dt} = \frac{\partial (\cdot)}{\partial t} + (\mathbf{v} - \mathbf{\hat{v}}) \cdot \nabla (\cdot)$
+The start searching procedure was used. This procedure
+has presented an acceptable computational cost, in addition
+to the concave domains can be used
 
 \column{.5\textwidth}
 \begin{center}
@@ -614,7 +615,9 @@ The convective term was replaced by material derivative in the direction of char
 \begin{columns}[c]
 \column{.5\textwidth}
 \justifying
-The departure node is calculated by $x_{d}^{n} = x_{i}^{n+1} - \left( \mathbf{v} - \mathbf{\hat{v}}\right) \Delta t$. Then, a searching procedure is required to find $x_{d}^{n}$ using barycentric coordinates
+The searching procedure must be prepared for three situations
+that may occur. After the departure node is found, the interpolation
+is performed
 
 \column{.5\textwidth}
 \begin{center}
@@ -1052,9 +1055,9 @@ u = \frac{4 u_{max}}{L^2} y \big[ L - y \big]
 \begin{columns}[c]
 \begin{column}{0.55\textwidth} 
 \small
-Inflow condition: $u=u_{analytical}$, $v=0$\\[0.1cm]
-Top plate: $u=0$, $v=0$, $\psi=1$\\[0.1cm]
-Bottom plate: $u=0$, $v=0$, $\psi=0$\\[0.1cm]
+Inflow condition: $v_{x}=u_{analytical}$, $v_{y}=0$\\[0.1cm]
+Top plate: $v_{x}=0$, $v_{y}=0$, $\psi=1$\\[0.1cm]
+Bottom plate: $v_{x}=0$, $v_{y}=0$, $\psi=0$\\[0.1cm]
 Vorticity condition: $\omega = \nabla \times \textbf{v}$\\[0.1cm]
 $\beta_{1} = 0$ \qquad $\beta_{2} = 1$
 \end{column}
@@ -1124,9 +1127,9 @@ $\beta_{1} = 0$ \qquad $\beta_{2} = 1$
 \begin{columns}[c]
 \begin{column}{0.55\textwidth} 
 \small
-Inflow condition: $u=u_{analytical}$, $v=0$\\[0.1cm]
-Top plate: $u=0$, $v=0$, $\psi=1$\\[0.1cm]
-Symmetric axis: $v=0$, $\psi=0$\\[0.1cm]
+Inflow condition: $v_{x}=u_{analytical}$, $v_{y}=0$\\[0.1cm]
+Top plate: $v_{x}=0$, $v_{y}=0$, $\psi=1$\\[0.1cm]
+Symmetric axis: $v_{y}=0$, $\psi=0$\\[0.1cm]
 Vorticity condition: $\omega = \nabla \times \textbf{v}$\\[0.1cm]
 $\beta_{1} = 0$ \qquad $\beta_{2} = 1$
 \end{column}
@@ -1188,8 +1191,8 @@ $\beta_{1} = 0$ \qquad $\beta_{2} = 1$
 \begin{columns}[c]
 \begin{column}{0.65\textwidth} 
 \small
-Bottom and side plates: $u=0$, $v=0$ e $\psi=0$\\[0.1cm]
-Top plate: $u=1$, $v=0$ e $\psi=0$\\[0.1cm]
+Bottom and side plates: $v_{x}=0$, $v_{y}=0$ e $\psi=0$\\[0.1cm]
+Top plate: $v_{x}=1$, $v_{y}=0$ e $\psi=0$\\[0.1cm]
 Vorticity condition: $\omega = \nabla \times \textbf{v}$\\[0.1cm]
 $\beta_{1} = 0$ \qquad $\beta_{2} = 1$\\[0.1cm] 
 $Re = 100$
@@ -1561,10 +1564,11 @@ Top plate: $u=1$, $v=0$ e $\psi=0$
 \begin{center}
 \begin{columns}[c]
 \begin{column}{0.8\textwidth} 
-Inflow condition: $u=u_{analytical}$, $v=0$;\\[0.1cm]
-Top plate: $u=0$, $v=0$, $\psi=1$;\\[0.1cm]
-Symmetry condition: $v=0$, $\psi=0$; \\[0.1cm]
-Drug-eluting stent: $u=0$, $v=0$, $\psi=1$ e $c=1$\\[0.1cm]
+Inflow condition: $v_{x}=u_{analytical}$, $v_{y}=0$;\\[0.1cm]
+Top plate: $v_{x}=0$, $v_{y}=0$, $\psi=1$;\\[0.1cm]
+Symmetry condition: $v_{y}=0$, $\psi=0$; \\[0.1cm]
+Drug-eluting stent: $v_{x}=0$, $v_{y}=0$, $\psi=1$, $e=1$\\[0.1cm]
+Vorticity condition: $\omega = \nabla \times \textbf{v}$\\[0.1cm]
 $\beta_{1}=0$ \qquad $\beta_{2}=1$
 \end{column}
 \hspace{-1cm}
@@ -1888,24 +1892,76 @@ $Re=54.5$
 
 % \vspace{0.3cm}
  
- \item The streamfunction-vorticity formulation showed an useful approach for to calculate
-       the velocity and concentration fields since the variables are scalars allowing a
-       smooth implementation\\
+% \item The vorticity-streamfunction formulation in a 2D context showed an useful approach to calculate
+%       the velocity fields since the unknowns are scalars allowing a
+%       smooth implementation\\
+%
+% \vspace{0.3cm}
+%
+% \item Due to generalized construction of the code, the simulator is able to describe
+%       drug-eluting stent problem in coronary artery as well as flows of Newtonian fluids
+%       with scalar transport (concentration or temperature)\\
+%
+% \vspace{0.3cm}
+
+ \item The ALE description allows to perform simulations in the fluid-structure and moving boundary problems, in addition it is possible to assign
+several mesh velocity values in specific regions of the problem
+in order to improve the accuracy of the numerical results\\
 
  \vspace{0.3cm}
 
- \item Due to generalized construction of the code, the simulator is able to describe
-       drug-eluting stent problem in coronary artery as well as flows of Newtonian fluids
-       with scalar transport (concentration or temperature)\\
+ \item The searching procedure of the semi-Lagrangian Method
+used in this work
+was well designed since it corresponds to only 2\% of
+average computational cost of the numerical simulation.
+Therefore, the methos showed to be very useful 
+ due to the unconditionnal stability and symmetric linear system\\
 
  \vspace{0.3cm}
 
- \item The ALE description allows moving boundary problems to be simulated
+ \item As expected, the chemical species transport in blood flow
+is directly influenced by Schmidt number, where the diffusion is
+increased as the Schmidt number decreases. It is possible that
+the density and viscosity of the blood are affected by 
+chemical species diffusion. However, this influence is not considered
+in this work
+
 \end{enumerate}
 \end{frame}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+ \frametitle{\LARGE Further developments:}
+ \vspace{-1cm}
+\begin{enumerate}
+ \justifying
+ \small
+% \item Was observed that the species transport in blood flow is directly influenced
+%       by drug used in stent production\\
+
+% \vspace{0.3cm}
+ 
+ \item Increase assembly performance\\
+
+ \vspace{0.3cm}
+
+ \item The use of primitive variables in the 3D Navier-Stokes equation \\
+
+ \vspace{0.3cm}
+
+ \item Blood flow model as a multiphase problem \\
+
+ \vspace{0.3cm}
+
+ \item Blood flow mode as a non-Newtonian fluid
+\end{enumerate}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \iffalse
 \begin{frame}
@@ -1938,7 +1994,7 @@ $Re=54.5$
  \Huge Thank you!\\
  \vspace{0.5cm}
  \small marquesleandro67@gmail.com\\
- \small gustavo.rabello@mecanica.coppe.ufrj.br\\
+ \small gustavo.rabello@coppe.ufrj.br\\
  \small jose.pontes@uerj.br\\
  \vspace{1.0cm}
  \small The authors thank the FAPERJ (Research Support Foundation of the State of Rio de Janeiro)
