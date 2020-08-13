@@ -328,11 +328,11 @@ Assumptions [3]:\\[0.1cm]
 \column{.5\textwidth}
 \begin{center}
 \begin{equation*}
- \frac{\partial \omega}{\partial t} + \left( \mathbf{v} - \mathbf{\hat{v}} \right) \cdot \nabla \omega = \frac{1}{Re} \nabla^{2} \omega
+ \frac{\partial \omega_{z}}{\partial t} + \left( \mathbf{v} - \mathbf{\hat{v}} \right) \cdot \nabla \omega_{z} = \frac{1}{Re} \nabla^{2} \omega_{z}
 \end{equation*}
 \medskip
 \begin{equation*}
- \nabla^{2} \psi = - \omega
+ \nabla^{2} \psi = - \omega_{z}
 \end{equation*}
 \medskip
 \begin{equation*}
@@ -374,11 +374,11 @@ The convective term was replaced by material derivative in the direction of char
 
 \column{.5\textwidth}
 \begin{equation*}
- \frac{D \omega}{D t} = \frac{1}{Re} \nabla^{2} \omega
+ \frac{D \omega_{z}}{D t} = \frac{1}{Re} \nabla^{2} \omega_{z}
 \end{equation*}
 \\
 \begin{equation*}
- \nabla^{2} \psi = - \omega
+ \nabla^{2} \psi = - \omega_{z}
 \end{equation*}
 \\
 \begin{equation*}
@@ -563,7 +563,7 @@ to the concave domains can be used
  
 
 % arrow
- \draw[dashed,line width=0.03cm,-stealth]  (2.57,1.20)  -- (J) ;
+ \draw[dashed,line width=0.03cm]  (2.57,1.20)  -- (J) ;
 
  % departure nodes
  \node[square, fill=white, draw, inner sep=0pt, minimum size=4pt] at (2.57,1.20) {};
@@ -1987,7 +1987,7 @@ in this work
 
  \vspace{0.3cm}
 
- \item Blood flow mode as a non-Newtonian fluid
+ \item Blood flow model as a non-Newtonian fluid
 \end{enumerate}
 \end{frame}
 
